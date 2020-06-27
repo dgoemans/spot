@@ -1,0 +1,22 @@
+{
+  "name": "spot",
+  "version": "0.0.1",
+  "description": "A simple redux client",
+  "main": "src/index/js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dgoemans/spot.git"
+  },
+  "keywords": [
+    "redux"
+  ],
+  "author": "David Goemans",
+  "license": "SEE LICENSE IN LICENSE.MD",
+  "bugs": {
+    "url": "https://github.com/dgoemans/spot/issues"
+  },
+  "homepage": "https://github.com/dgoemans/spot#readme"
+}
