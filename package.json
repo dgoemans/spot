@@ -4,7 +4,9 @@
   "description": "A simple redux client",
   "main": "src/index/js",
   "scripts": {
-    "test": "test"
+    "build": "babel src -d lib",
+    "dev": "babel src -d lib --watch",
+    "test": "jest --watch --watchAll"
   },
   "repository": {
     "type": "git",
@@ -18,5 +20,17 @@
   "bugs": {
     "url": "https://github.com/dgoemans/spot/issues"
   },
-  "homepage": "https://github.com/dgoemans/spot#readme"
+  "homepage": "https://github.com/dgoemans/spot#readme",
+  "dependencies": {
+    "babel-jest": "^26.1.0",
+    "es6-promise": "^4.2.8",
+    "isomorphic-fetch": "^2.2.1",
+    "redux": "^4.0.5"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.10.3",
+    "@babel/core": "^7.10.3",
+    "@babel/preset-env": "^7.10.3",
+    "jest": "^26.1.0"
+  }
 }

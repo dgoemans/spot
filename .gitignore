@@ -1,0 +1,6 @@
+lib
+node_modules
+bin
+build
+thumbs.db
+.DS_STORE
