@@ -26,16 +26,20 @@ export const fetchMiddleware = (store) => (next) => async (action) => {
       }
 
       const result = await response.json();
+
+      const payload = {};
+      let depth = payload;
+      const path = action.payload.path;
+      console.log(`Path ${JSON.stringify(path)}`);
+      path.forEach((current, index) =>  {
+        depth[current] = (index === path.length - 1) ? result : {}
+        depth = depth[current];
+      });
+      console.log(`Payload ${JSON.stringify(payload)}`);
       
       store.dispatch({
         type: "QUERY_COMPLETE",
-        payload: {
-          [action.payload.endpoint]: {
-            [btoa(JSON.stringify(action.payload.params))]: {
-              ...result,
-            },
-          },
-        },
+        payload,
       });
     } catch (e) {
       console.error(e);

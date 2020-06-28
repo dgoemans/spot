@@ -3,6 +3,7 @@ import { buildUrl } from "./build-url";
 export function commandQuery(state, action) {
   switch (action.type) {
     case "QUERY_COMPLETE":
+      // TODO: Proper deep object merge
       return {
         ...state,
         ...action.payload,

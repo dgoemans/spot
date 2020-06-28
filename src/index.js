@@ -18,10 +18,10 @@ const initializeSpot = (baseUrl) => {
   });
 
   const spot = {
-    query: (endpoint, params) => {
+    query: (endpoint, params, path = [endpoint, btoa(JSON.stringify(params))]) => {
       store.dispatch({
         type: "QUERY",
-        payload: { params, endpoint },
+        payload: { params, endpoint, path },
       });
     },
     command: (endpoint, params) => {

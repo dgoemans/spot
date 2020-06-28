@@ -5,9 +5,9 @@ import { buildUrl } from "../src/build-url";
 import { delay } from "../src/delay";
 
 const baseUrl = "http://example.com";
-const query = buildUrl(baseUrl, "fetch-user", { one: "One", two: 2 });
+const query = buildUrl(baseUrl, "fetch-user", { userId: "id-one", age: 2 });
 const invalid = buildUrl(baseUrl, "invalid-json");
-const command = buildUrl(baseUrl, "update-user", { one: "One", two: 2 });
+const command = buildUrl(baseUrl, "update-user", { userId: "id-one", age: 3 });
 
 const waitForLoadingDone = (spot) => new Promise(spot.subscribeOnce);
 
@@ -50,15 +50,16 @@ describe("spot", () => {
   it("Can fetch data", async () => {
     const spot = initializeSpot(baseUrl);
 
-    const params = { one: "One", two: 2 };
-    spot.query("fetch-user", params);
+    const userId = "id-one";
+    const params = { userId, age: 2 };
+    spot.query("fetch-user", params, ['users', userId]);
     expect(spot.getState().data).toStrictEqual({loading: true});
     
     await waitForLoadingDone(spot);
 
     const expectedResult = {
-      "fetch-user": { 
-        [btoa(JSON.stringify(params))]: {"age": 7, "name": "Spot", "role": "Good Boy"}
+      "users": { 
+          [userId]: {"age": 7, "name": "Spot", "role": "Good Boy"}
       },
       loading: false
     };
@@ -84,7 +85,7 @@ describe("spot", () => {
 
     const orignalState = spot.getState();
 
-    const params = { one: "One", two: 2 };
+    const params = { userId: "id-one", age: 3 };
     spot.command("update-user", params);
     expect(spot.getState().data).toStrictEqual({loading: true});
 
