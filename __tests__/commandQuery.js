@@ -1,14 +1,19 @@
+import fetchMock from "jest-fetch-mock";
+
 import { initializeSpot } from "../src";
-import fetchMock, { enableFetchMocks } from "jest-fetch-mock";
+import { buildUrl } from "../src/build-url";
 
 const baseUrl = "http://example.com";
+const query = buildUrl(baseUrl, "fetch-user", { one: "One", two: 2 });
+const invalid = buildUrl(baseUrl, "invalid-json");
+const command = buildUrl(baseUrl, "update-user", { one: "One", two: 2 });
 
 describe("spot", () => {
   beforeEach(() => {
-    // if you have an existing `beforeEach` just add the following lines to it
-    fetchMock.mockIf(/^http:\/\/example.com.*$/, (req) => {
-      console.log(`Mocking Url: ${req.url}`);
-      if (req.url.endsWith("fetch-user")) {
+    fetchMock.resetMocks();
+    fetchMock.doMock();
+    fetchMock.mockIf(/^http:\/\/example.com.*$/, async (req) => {
+      if (req.url.endsWith(query)) {
         return {
           status: 200,
           body: JSON.stringify({
@@ -17,12 +22,12 @@ describe("spot", () => {
             age: 7,
           }),
         };
-      } else if (req.url.endsWith("/invalid-json")) {
+      } else if (req.url.endsWith(invalid)) {
         return {
           body: "<>.aspojdas <XMC98yyfdbshbx hjbgas",
           status: 200,
         };
-      } else if (req.url.endsWith("/update-user")) {
+      } else if (req.url.endsWith(command)) {
         return {
           body: "",
           status: 200,
@@ -49,8 +54,17 @@ describe("spot", () => {
       });
     });
 
-    const result = await spot.query("fetch-user", { one: "One", two: 2 });
+    const params = { one: "One", two: 2 };
+    spot.query("fetch-user", params);
+    
     const data = await awaiter;
-    expect(data).toBe(null);
+
+    const expectedResult = {
+      "fetch-user": { 
+        [btoa(JSON.stringify(params))]: {"age": 7, "name": "Spot", "role": "Good Boy"}
+      }
+    };
+
+    expect(data).toStrictEqual(expectedResult);
   });
 });

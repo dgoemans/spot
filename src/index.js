@@ -1,5 +1,4 @@
 import { makeStore } from "./store";
-import "isomorphic-fetch";
 
 const initializeSpot = (baseUrl) => {
   const store = makeStore();
@@ -19,14 +18,14 @@ const initializeSpot = (baseUrl) => {
 
   const spot = {
     store,
-    query: async (endpoint, params) => {
-      return await store.dispatch({
+    query: (endpoint, params) => {
+      store.dispatch({
         type: "QUERY",
         payload: { params, endpoint },
       });
     },
-    command: async (endpoint, params) => {
-      return await store.dispatch({
+    command: (endpoint, params) => {
+      store.dispatch({
         type: "COMMAND",
         payload: { params, endpoint },
       });
