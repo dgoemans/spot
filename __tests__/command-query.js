@@ -17,7 +17,6 @@ const users = {
 };
 
 const baseUrl = "http://example.com";
-const invalid = buildUrl(baseUrl, "invalid-json");
 
 const waitForLoadingDone = (spot) => new Promise(spot.subscribeOnce);
 
@@ -32,17 +31,17 @@ describe("spot", () => {
           status: 200,
           body: JSON.stringify(users[tokens[1]]),
         };
-      } else if (req.url.endsWith(invalid)) {
-        return {
-          body: "<>.aspojdas <XMC98yyfdbshbx hjbgas",
-          status: 200,
-        };
       } else if (req.url.startsWith(`${baseUrl}/update-user`)) {
         const tokens = req.url.split('=').map(token => token.split('&')).reduce((acc, val) => acc.concat(val), []);
         console.log(tokens);
         users[tokens[1]].age = Number.parseInt(tokens[3]);
         return {
           body: "",
+          status: 200,
+        };
+      } else if (req.url.startsWith(`${baseUrl}/invalid-json`)) {
+        return {
+          body: "<>.aspojdas <XMC98yyfdbshbx hjbgas",
           status: 200,
         };
       } else {
@@ -119,7 +118,7 @@ describe("spot", () => {
 
     {
       spot.command("update-user", { userId: "id-two", age: 4 });
-      
+
       await waitForLoadingDone(spot);
     }
 
