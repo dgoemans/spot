@@ -1,6 +1,5 @@
 import { buildUrl } from "./build-url";
-
-const fetchJson = async (url, config = { 
+const defaultFetchConfig = { 
   method: 'GET',
   mode: 'cors',
   credentials: 'same-origin',
@@ -8,13 +7,11 @@ const fetchJson = async (url, config = {
     'Content-Type': 'application/json'
   }, 
   referrerPolicy: 'no-referrer',
-}) => {
-  const response = await fetch(url, config);
-  return response.json();
 };
 
 export const fetchMiddleware = (store) => (next) => async (action) => {
-  console.log(`middleware ${JSON.stringify(action, null, 2)}`);
+  const nextResult = next(action);
+
   if (action.type === "QUERY") {
     const url = buildUrl(
       store.getState().config.baseUrl,
@@ -22,7 +19,14 @@ export const fetchMiddleware = (store) => (next) => async (action) => {
       action.payload.params
     );
     try {
-      const result = await fetchJson(url);
+      const response = await fetch(url, { ...defaultFetchConfig, method: 'GET' });
+      
+      if(response.status < 200 || response.status >= 400) {
+        throw new Error(`QUERY FAILED ${response.status}: ${response.statusText}`)
+      }
+
+      const result = await response.json();
+      
       store.dispatch({
         type: "QUERY_COMPLETE",
         payload: {
@@ -36,6 +40,8 @@ export const fetchMiddleware = (store) => (next) => async (action) => {
     } catch (e) {
       console.error(e);
       store.dispatch({ type: "ERROR", payload: e });
+    } finally {
+      store.dispatch({ type: "STATE_UPDATED" });
     }
   } else if (action.type === "COMMAND") {
     const url = buildUrl(
@@ -44,21 +50,20 @@ export const fetchMiddleware = (store) => (next) => async (action) => {
       action.payload.params
     );
     try {
-      const result = await fetchJson(url);
-      store.dispatch({
-        type: "COMMAND_COMPLETE",
-        payload: {
-          [action.payload.endpoint]: {
-            [action.payload.params]: {
-              ...result,
-            },
-          },
-        },
-      });
+      const response = await fetch(url, { ...defaultFetchConfig, method: 'POST' });
+
+      if(response.status < 200 || response.status >= 400) {
+        throw new Error(`COMMAND FAILED ${response.status}: ${response.statusText}`)
+      }
+
+      store.dispatch({ type: "COMMAND_COMPLETE" });
     } catch (e) {
+      console.error(e);
       store.dispatch({ type: "ERROR", payload: e });
+    } finally {
+      store.dispatch({ type: "STATE_UPDATED" });
     }
   }
 
-  return next(action);
+  return nextResult;
 };

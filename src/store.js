@@ -5,6 +5,6 @@ import { fetchMiddleware } from "./fetch-middleware";
 export const makeStore = () =>
   createStore(
     reducer,
-    { config: {}, data: {}, errors: [] },
+    { config: {}, data: { loading: false }, errors: [] },
     applyMiddleware(fetchMiddleware)
   );

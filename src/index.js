@@ -9,15 +9,7 @@ const initializeSpot = (baseUrl) => {
     payload: { baseUrl },
   });
 
-  const subscriber = (hash) => {
-    return () => {
-      const state = store.getState();
-      subscriptions[hash](state.data);
-    };
-  };
-
   const spot = {
-    store,
     query: (endpoint, params) => {
       store.dispatch({
         type: "QUERY",
@@ -30,16 +22,9 @@ const initializeSpot = (baseUrl) => {
         payload: { params, endpoint },
       });
     },
-    subscribe: (subscription) => {
-      const hash = subscription.toString();
-      subscriptions[hash] = subscription;
-      store.subscribe(subscriber(hash));
-    },
-    unsubscribe: (subscription) => {
-      const hash = subscription.toString();
-      delete subscriptions[hash];
-      store.unsubscribe(subscriber(hash));
-    },
+    getState: () => {
+      return store.getState();
+    }
   };
 
   return spot;

@@ -7,13 +7,21 @@ export function commandQuery(state, action) {
         ...state,
         ...action.payload,
       };
-      break;
     case "COMMAND_COMPLETE":
       return {
         ...state,
-        ...action.payload,
       };
-      break;
+    case "QUERY":
+    case "COMMAND":
+      return {
+        ...state,
+        loading: true
+      };
+    case "STATE_UPDATED":
+      return {
+        ...state,
+        loading: false
+      };
     default:
       return {
         ...state,
