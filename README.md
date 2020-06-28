@@ -1,5 +1,5 @@
 # Spot
-![Node.js CI](https://github.com/dgoemans/spot/workflows/Node.js%20CI/badge.svg)
+![Node.js CI](https://github.com/dgoemans/spot/workflows/Node.js%20CI/badge.svg?branch=main&event=push)
 
 # Installing
 
