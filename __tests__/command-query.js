@@ -9,14 +9,7 @@ const query = buildUrl(baseUrl, "fetch-user", { one: "One", two: 2 });
 const invalid = buildUrl(baseUrl, "invalid-json");
 const command = buildUrl(baseUrl, "update-user", { one: "One", two: 2 });
 
-const waitForLoadingDone = (spot) => {
-  return new Promise(async (resolve) => {
-    while(spot.getState().data.loading) {
-      await delay(10);
-    }
-    resolve();
-  })
-}
+const waitForLoadingDone = (spot) => new Promise(spot.subscribeOnce);
 
 describe("spot", () => {
   beforeEach(() => {
@@ -94,7 +87,7 @@ describe("spot", () => {
     const params = { one: "One", two: 2 };
     spot.command("update-user", params);
     expect(spot.getState().data).toStrictEqual({loading: true});
-    
+
     await waitForLoadingDone(spot);
 
     const expectedResult = { loading: false };

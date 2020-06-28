@@ -9,6 +9,14 @@ const initializeSpot = (baseUrl) => {
     payload: { baseUrl },
   });
 
+  store.subscribe(() => {
+    if(!store.getState().data.loading) {
+      Object.values(subscriptions).forEach((sub) => {
+        sub(store.getState());
+      });
+    }
+  });
+
   const spot = {
     query: (endpoint, params) => {
       store.dispatch({
@@ -21,6 +29,21 @@ const initializeSpot = (baseUrl) => {
         type: "COMMAND",
         payload: { params, endpoint },
       });
+    },
+    subscribeOnce: (subscription) => {
+      const hash = subscription.toString();
+      subscriptions[`${hash}_once`] = (state) => {
+        subscription(state);
+        delete subscriptions[hash];
+      };
+    },
+    subscribe: (subscription) => {
+      const hash = subscription.toString();
+      subscriptions[hash] = subscription;
+    },
+    unsubscribe: (subscription) => {
+      const hash = subscription.toString();
+      delete subscriptions[hash];
     },
     getState: () => {
       return store.getState();
