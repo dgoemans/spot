@@ -1,28 +1,18 @@
 import { buildUrl } from "./build-url";
 
-export async function reducer(state, config, action) {
+export function commandQuery(state, action) {
   switch (action.type) {
-    case "QUERY":
-      const url = buildUrl(
-        config.baseUrl,
-        action.payload.endpoint,
-        action.payload.params
-      );
-      try {
-        const data = await fetch(url);
-        return {
-          ...state,
-          data,
-        };
-      } catch (e) {
-        console.error(`QUERY Error: ${e}`);
-        return {
-          ...state,
-          errors: [...(state.errors || []), e],
-        };
-      }
+    case "QUERY_COMPLETE":
+      return {
+        ...state,
+        ...action.payload,
+      };
       break;
-    case "COMMAND":
+    case "COMMAND_COMPLETE":
+      return {
+        ...state,
+        ...action.payload,
+      };
       break;
     default:
       return {
@@ -33,18 +23,34 @@ export async function reducer(state, config, action) {
 
 export function configure(state, action) {
   if (action.type === "SETUP") {
+    const { baseUrl } = action.payload;
     return {
       ...state,
-      baseUrl: action.payload.baseUrl,
+      baseUrl,
     };
   }
 
-  return state;
+  return { ...state };
 }
 
-export const data = async (state, action) => {
+function errors(state, action) {
+  if (action.type === "ERROR") {
+    return [...state, action.payload];
+  }
+  return [...state];
+}
+
+export const reducer = (state, action) => {
+  console.log(
+    `Got Action:\n${JSON.stringify(
+      action,
+      null,
+      2
+    )}\nCurrent State:\n${JSON.stringify(state, null, 2)}`
+  );
   return {
     config: configure(state.config, action),
-    data: await reducer(state.data, state.config, action),
+    data: commandQuery(state.data, action),
+    errors: errors(state.errors, action),
   };
 };

@@ -1,5 +1,10 @@
-import { createStore } from "redux";
-import { data } from "./reducer";
+import { createStore, applyMiddleware } from "redux";
+import { reducer } from "./reducer";
+import { fetchMiddleware } from "./fetch-middleware";
 
-export const makeStore = (baseUrl) =>
-  createStore(data, { baseUrl, data: {}, errors: [] });
+export const makeStore = () =>
+  createStore(
+    reducer,
+    { config: {}, data: {}, errors: [] },
+    applyMiddleware(fetchMiddleware)
+  );
