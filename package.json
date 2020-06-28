@@ -6,7 +6,8 @@
   "scripts": {
     "build": "babel src -d lib",
     "dev": "babel src -d lib --watch",
-    "test": "jest --watch --watchAll"
+    "test": "jest --watch --watchAll",
+    "test-ci": "jest --watch --watchAll"
   },
   "repository": {
     "type": "git",
