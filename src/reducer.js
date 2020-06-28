@@ -1,13 +1,9 @@
-import { buildUrl } from "./build-url";
+import merge from 'deepmerge';
 
 export function commandQuery(state, action) {
   switch (action.type) {
     case "QUERY_COMPLETE":
-      // TODO: Proper deep object merge
-      return {
-        ...state,
-        ...action.payload,
-      };
+      return merge(state, action.payload);
     case "COMMAND_COMPLETE":
       return {
         ...state,

@@ -24,6 +24,7 @@
   "homepage": "https://github.com/dgoemans/spot#readme",
   "dependencies": {
     "babel-jest": "^26.1.0",
+    "deepmerge": "^4.2.2",
     "es6-promise": "^4.2.8",
     "redux": "^4.0.5"
   },
