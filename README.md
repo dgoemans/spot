@@ -1,4 +1,5 @@
 # Spot
+![Node.js CI](https://github.com/dgoemans/spot/workflows/Node.js%20CI/badge.svg)
 
 # Installing
 
