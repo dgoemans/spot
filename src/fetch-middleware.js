@@ -1,12 +1,15 @@
+import "isomorphic-fetch";
+
 import { buildUrl } from "./build-url";
-const defaultFetchConfig = { 
-  method: 'GET',
-  mode: 'cors',
-  credentials: 'same-origin',
+
+const defaultFetchConfig = {
+  method: "GET",
+  mode: "cors",
+  credentials: "same-origin",
   headers: {
-    'Content-Type': 'application/json'
-  }, 
-  referrerPolicy: 'no-referrer',
+    "Content-Type": "application/json",
+  },
+  referrerPolicy: "no-referrer",
 };
 
 export const fetchMiddleware = (store) => (next) => async (action) => {
@@ -19,10 +22,15 @@ export const fetchMiddleware = (store) => (next) => async (action) => {
       action.payload.params
     );
     try {
-      const response = await fetch(url, { ...defaultFetchConfig, method: 'GET' });
-      
-      if(response.status < 200 || response.status >= 400) {
-        throw new Error(`QUERY FAILED ${response.status}: ${response.statusText}`)
+      const response = await fetch(url, {
+        ...defaultFetchConfig,
+        method: "GET",
+      });
+
+      if (response.status < 200 || response.status >= 400) {
+        throw new Error(
+          `QUERY FAILED ${response.status}: ${response.statusText}`
+        );
       }
 
       const result = await response.json();
@@ -30,11 +38,11 @@ export const fetchMiddleware = (store) => (next) => async (action) => {
       const payload = {};
       let depth = payload;
       const path = action.payload.path;
-      path.forEach((current, index) =>  {
-        depth[current] = (index === path.length - 1) ? result : {}
+      path.forEach((current, index) => {
+        depth[current] = index === path.length - 1 ? result : {};
         depth = depth[current];
       });
-      
+
       store.dispatch({
         type: "QUERY_COMPLETE",
         payload,
@@ -48,14 +56,19 @@ export const fetchMiddleware = (store) => (next) => async (action) => {
   } else if (action.type === "COMMAND") {
     const url = buildUrl(
       store.getState().config.baseUrl,
-      action.payload.endpoint,
-      action.payload.params
+      action.payload.endpoint
     );
     try {
-      const response = await fetch(url, { ...defaultFetchConfig, method: 'POST' });
+      const response = await fetch(url, {
+        ...defaultFetchConfig,
+        method: "POST",
+        body: JSON.stringify(action.payload.params),
+      });
 
-      if(response.status < 200 || response.status >= 400) {
-        throw new Error(`COMMAND FAILED ${response.status}: ${response.statusText}`)
+      if (response.status < 200 || response.status >= 400) {
+        throw new Error(
+          `COMMAND FAILED ${response.status}: ${response.statusText}`
+        );
       }
 
       store.dispatch({ type: "COMMAND_COMPLETE" });

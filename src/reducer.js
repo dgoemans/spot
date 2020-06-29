@@ -1,4 +1,4 @@
-import merge from 'deepmerge';
+import merge from "deepmerge";
 
 export function commandQuery(state, action) {
   switch (action.type) {
@@ -12,12 +12,12 @@ export function commandQuery(state, action) {
     case "COMMAND":
       return {
         ...state,
-        loading: true
+        loading: true,
       };
     case "STATE_UPDATED":
       return {
         ...state,
-        loading: false
+        loading: false,
       };
     default:
       return {
@@ -46,13 +46,16 @@ function errors(state, action) {
 }
 
 export const reducer = (state, action) => {
-  console.log(
-    `Got Action:\n${JSON.stringify(
-      action,
-      null,
-      2
-    )}\nCurrent State:\n${JSON.stringify(state, null, 2)}`
-  );
+  if (state.config && state.config.debug) {
+    console.log(
+      `Got Action:\n${JSON.stringify(
+        action,
+        null,
+        2
+      )}\nCurrent State:\n${JSON.stringify(state, null, 2)}`
+    );
+  }
+
   return {
     config: configure(state.config, action),
     data: commandQuery(state.data, action),

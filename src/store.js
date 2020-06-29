@@ -2,9 +2,9 @@ import { createStore, applyMiddleware } from "redux";
 import { reducer } from "./reducer";
 import { fetchMiddleware } from "./fetch-middleware";
 
-export const makeStore = () =>
+export const makeStore = (debug = false) =>
   createStore(
     reducer,
-    { config: {}, data: { loading: false }, errors: [] },
+    { config: { debug }, data: { loading: false }, errors: [] },
     applyMiddleware(fetchMiddleware)
   );

@@ -1,7 +1,7 @@
 import { makeStore } from "./store";
 
-const initializeSpot = (baseUrl) => {
-  const store = makeStore();
+const initializeSpot = (baseUrl, debug = false) => {
+  const store = makeStore(debug);
   const subscriptions = {};
 
   store.dispatch({
@@ -10,7 +10,7 @@ const initializeSpot = (baseUrl) => {
   });
 
   store.subscribe(() => {
-    if(!store.getState().data.loading) {
+    if (!store.getState().data.loading) {
       Object.values(subscriptions).forEach((sub) => {
         sub(store.getState());
       });
@@ -18,7 +18,11 @@ const initializeSpot = (baseUrl) => {
   });
 
   const spot = {
-    query: (endpoint, params = {}, path = [endpoint, btoa(JSON.stringify(params))]) => {
+    query: (
+      endpoint,
+      params = {},
+      path = [endpoint, JSON.stringify(params)]
+    ) => {
       store.dispatch({
         type: "QUERY",
         payload: { params, endpoint, path },
@@ -47,7 +51,7 @@ const initializeSpot = (baseUrl) => {
     },
     getState: () => {
       return store.getState();
-    }
+    },
   };
 
   return spot;

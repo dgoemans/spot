@@ -1,0 +1,19 @@
+{
+  "name": "spot-example",
+  "version": "0.0.1",
+  "description": "",
+  "main": "my-app.js",
+  "scripts": {
+    "start": "node ./my-app.js",
+    "dev": "nodemon ./my-app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "spot": "file:.."
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
