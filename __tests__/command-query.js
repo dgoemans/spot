@@ -32,11 +32,8 @@ describe("spot", () => {
           body: JSON.stringify(users[tokens[1]]),
         };
       } else if (req.url.startsWith(`${baseUrl}/update-user`)) {
-        const tokens = req.url
-          .split("=")
-          .map((token) => token.split("&"))
-          .reduce((acc, val) => acc.concat(val), []);
-        users[tokens[1]].age = Number.parseInt(tokens[3]);
+        const json = await req.json();
+        users[json.userId].age = json.age;
         return {
           body: "",
           status: 200,
