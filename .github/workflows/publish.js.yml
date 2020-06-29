@@ -5,24 +5,24 @@ name: Node.js CI
 
 on:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    tags:
+      - "v*.*.*"
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [10.x, 12.x, 14.x]
-
+    needs: build
     steps:
       - uses: actions/checkout@v2
-      - name: Build with Node ${{ matrix.node-version }}
+      - name: Set env
+        run: echo ::set-env name=RELEASE_VERSION::${GITHUB_REF#refs/*/}
+      - name: Publish to npm
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 12
       - run: npm ci
       - run: npm run build
-      - run: npm run test-ci
+      - run: npm version $RELEASE_VERSION
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
