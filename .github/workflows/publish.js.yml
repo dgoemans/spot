@@ -21,7 +21,7 @@ jobs:
           node-version: 12
       - run: npm ci
       - run: npm run build
-      - run: npm version $RELEASE_VERSION
+      - run: npm version $RELEASE_VERSION --no-git-tag-version
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
