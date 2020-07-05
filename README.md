@@ -16,14 +16,17 @@ See code in the `example` directory for a sample usage (and a naive dummy backen
   
   // Query a list endpoint and store the results under 'users'
   await spot.query('fetch-users', { userId: 'id-one' }, ['users']);
+
+  // Access the data
+  spot.data.users['id-one'].name
   
-  // Send a command to update a user, and await the result to land in data
+  // Send a command to update a user
   await spot.command('update-user', { userId: 'id-one', age: 7 });
 
   // Query a specific user and override the user stored at 'users/id-two'
   spot.query('fetch-user', { userId: 'id-two' }, ['users', 'idtwo']);
 
-  // Wait for the query using a subscription/callback
+  // Instead of awaiting you can also use subscription callback
   spot.subscribeOnce(() => {
     // Access the stored data
     spot.data.users['id-two'];
