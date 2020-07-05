@@ -1,58 +1,77 @@
+import deepmerge from 'deepmerge';
 import { makeStore } from './store';
 
-const initializeSpot = (baseUrl, debug = false) => {
-  const store = makeStore(debug);
-  const subscriptions = {};
+export class Spot {
+  constructor(baseUrl, debug) {
+    this.store = makeStore(debug);
+    this.subscriptions = {};
 
-  store.dispatch({
-    type: 'SETUP',
-    payload: { baseUrl },
-  });
+    this.store.dispatch({
+      type: 'SETUP',
+      payload: { baseUrl },
+    });
 
-  store.subscribe(() => {
-    if (!store.getState().data.loading) {
-      Object.values(subscriptions).forEach((sub) => {
-        sub(store.getState());
-      });
+    this.store.subscribe(() => {
+      if (!this.store.getState().data.loading) {
+        Object.values(this.subscriptions).forEach((sub) => {
+          sub(this.store.getState());
+        });
+      }
+    });
+  }
+
+  query = (
+    endpoint,
+    params = {},
+    path = [endpoint, JSON.stringify(params)],
+  ) => {
+    this.store.dispatch({
+      type: 'QUERY',
+      payload: { params, endpoint, path },
+    });
+  }
+
+  command = (endpoint, params) => {
+    this.store.dispatch({
+      type: 'COMMAND',
+      payload: { params, endpoint },
+    });
+  }
+
+  subscribeOnce = (subscription) => {
+    const hash = subscription.toString();
+    this.subscriptions[`${hash}_once`] = (state) => {
+      subscription(state);
+      delete this.subscriptions[hash];
+    };
+  }
+
+  subscribe = (subscription) => {
+    const hash = subscription.toString();
+    this.subscriptions[hash] = subscription;
+  }
+
+  unsubscribe = (subscription) => {
+    const hash = subscription.toString();
+    delete this.subscriptions[hash];
+  }
+
+  get = (path) => {
+    let state = this.store.getState().data;
+    while (path.length) {
+      const next = path.shift();
+      state = state[next];
     }
-  });
+    return deepmerge({}, state);
+  }
 
-  const spot = {
-    query: (
-      endpoint,
-      params = {},
-      path = [endpoint, JSON.stringify(params)],
-    ) => {
-      store.dispatch({
-        type: 'QUERY',
-        payload: { params, endpoint, path },
-      });
-    },
-    command: (endpoint, params) => {
-      store.dispatch({
-        type: 'COMMAND',
-        payload: { params, endpoint },
-      });
-    },
-    subscribeOnce: (subscription) => {
-      const hash = subscription.toString();
-      subscriptions[`${hash}_once`] = (state) => {
-        subscription(state);
-        delete subscriptions[hash];
-      };
-    },
-    subscribe: (subscription) => {
-      const hash = subscription.toString();
-      subscriptions[hash] = subscription;
-    },
-    unsubscribe: (subscription) => {
-      const hash = subscription.toString();
-      delete subscriptions[hash];
-    },
-    getState: () => store.getState(),
-  };
+  get data() {
+    return deepmerge({}, this.store.getState().data);
+  }
 
-  return spot;
-};
+  get errors() {
+    return deepmerge([], this.store.getState().errors);
+  }
+}
 
-export { initializeSpot };
+export const initializeSpot = (baseUrl, debug = false) => new Spot(baseUrl, debug);

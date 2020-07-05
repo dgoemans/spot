@@ -55,7 +55,7 @@ describe('spot', () => {
 
     {
       spot.query('fetch-user', { userId: 'id-one' }, ['users', 'id-one']);
-      expect(spot.getState().data).toStrictEqual({ loading: true });
+      expect(spot.data).toStrictEqual({ loading: true });
 
       await waitForLoadingDone(spot);
 
@@ -66,7 +66,7 @@ describe('spot', () => {
         loading: false,
       };
 
-      expect(spot.getState().data).toStrictEqual(expectedResult);
+      expect(spot.data).toStrictEqual(expectedResult);
     }
 
     {
@@ -80,7 +80,7 @@ describe('spot', () => {
         },
         loading: false,
       };
-      expect(spot.getState().data).toStrictEqual(expectedResult);
+      expect(spot.data).toStrictEqual(expectedResult);
     }
   });
 
@@ -88,13 +88,13 @@ describe('spot', () => {
     const spot = initializeSpot(baseUrl);
 
     spot.query('invalid-json');
-    expect(spot.getState().data).toStrictEqual({ loading: true });
+    expect(spot.data).toStrictEqual({ loading: true });
 
     await waitForLoadingDone(spot);
 
-    expect(spot.getState().data).toStrictEqual({ loading: false });
-    expect(spot.getState().errors).toHaveLength(1);
-    expect(spot.getState().errors[0]).toMatchSnapshot();
+    expect(spot.data).toStrictEqual({ loading: false });
+    expect(spot.errors).toHaveLength(1);
+    expect(spot.errors[0]).toMatchSnapshot();
   });
 
   it('Can execute commands data', async () => {
@@ -110,7 +110,7 @@ describe('spot', () => {
         },
         loading: false,
       };
-      expect(spot.getState().data).toStrictEqual(expectedResult);
+      expect(spot.data).toStrictEqual(expectedResult);
     }
 
     spot.command('update-user', { userId: 'id-two', age: 4 });
@@ -126,7 +126,21 @@ describe('spot', () => {
         },
         loading: false,
       };
-      expect(spot.getState().data).toStrictEqual(expectedResult);
+      expect(spot.data).toStrictEqual(expectedResult);
     }
+  });
+
+  it('Can look up data by path', async () => {
+    const spot = initializeSpot(baseUrl);
+
+    spot.query('fetch-user', { userId: 'id-two' }, ['users', 'id-two']);
+
+    await waitForLoadingDone(spot);
+
+    const user = spot.get(['users', 'id-two']);
+    expect(user).toStrictEqual({ age: 4, name: 'Rufus', role: 'Home Security' });
+
+    const sameuser = spot.data.users['id-two'];
+    expect(sameuser).toStrictEqual({ age: 4, name: 'Rufus', role: 'Home Security' });
   });
 });
