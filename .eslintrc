@@ -1,0 +1,16 @@
+{
+  "plugins": [ "jest" ],
+  "extends": "airbnb",
+  "env": {
+    "es6": true,
+    "browser": true,
+    "jest/globals": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 11,
+    "sourceType": "module"
+  },
+  "rules": {
+    "import/prefer-default-export": "off"
+  }
+}

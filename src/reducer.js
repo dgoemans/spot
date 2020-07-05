@@ -1,20 +1,20 @@
-import merge from "deepmerge";
+import merge from 'deepmerge';
 
 export function commandQuery(state, action) {
   switch (action.type) {
-    case "QUERY_COMPLETE":
+    case 'QUERY_COMPLETE':
       return merge(state, action.payload);
-    case "COMMAND_COMPLETE":
+    case 'COMMAND_COMPLETE':
       return {
         ...state,
       };
-    case "QUERY":
-    case "COMMAND":
+    case 'QUERY':
+    case 'COMMAND':
       return {
         ...state,
         loading: true,
       };
-    case "STATE_UPDATED":
+    case 'STATE_UPDATED':
       return {
         ...state,
         loading: false,
@@ -27,7 +27,7 @@ export function commandQuery(state, action) {
 }
 
 export function configure(state, action) {
-  if (action.type === "SETUP") {
+  if (action.type === 'SETUP') {
     const { baseUrl } = action.payload;
     return {
       ...state,
@@ -39,7 +39,7 @@ export function configure(state, action) {
 }
 
 function errors(state, action) {
-  if (action.type === "ERROR") {
+  if (action.type === 'ERROR') {
     return [...state, action.payload];
   }
   return [...state];
@@ -47,12 +47,13 @@ function errors(state, action) {
 
 export const reducer = (state, action) => {
   if (state.config && state.config.debug) {
+    // eslint-disable-next-line no-console
     console.log(
       `Got Action:\n${JSON.stringify(
         action,
         null,
-        2
-      )}\nCurrent State:\n${JSON.stringify(state, null, 2)}`
+        2,
+      )}\nCurrent State:\n${JSON.stringify(state, null, 2)}`,
     );
   }
 

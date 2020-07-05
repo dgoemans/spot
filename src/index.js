@@ -1,11 +1,11 @@
-import { makeStore } from "./store";
+import { makeStore } from './store';
 
 const initializeSpot = (baseUrl, debug = false) => {
   const store = makeStore(debug);
   const subscriptions = {};
 
   store.dispatch({
-    type: "SETUP",
+    type: 'SETUP',
     payload: { baseUrl },
   });
 
@@ -21,16 +21,16 @@ const initializeSpot = (baseUrl, debug = false) => {
     query: (
       endpoint,
       params = {},
-      path = [endpoint, JSON.stringify(params)]
+      path = [endpoint, JSON.stringify(params)],
     ) => {
       store.dispatch({
-        type: "QUERY",
+        type: 'QUERY',
         payload: { params, endpoint, path },
       });
     },
     command: (endpoint, params) => {
       store.dispatch({
-        type: "COMMAND",
+        type: 'COMMAND',
         payload: { params, endpoint },
       });
     },
@@ -49,9 +49,7 @@ const initializeSpot = (baseUrl, debug = false) => {
       const hash = subscription.toString();
       delete subscriptions[hash];
     },
-    getState: () => {
-      return store.getState();
-    },
+    getState: () => store.getState(),
   };
 
   return spot;
