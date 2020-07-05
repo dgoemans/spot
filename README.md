@@ -24,12 +24,12 @@ See code in the `example` directory for a sample usage (and a naive dummy backen
   await spot.command('update-user', { userId: 'id-one', age: 7 });
 
   // Query a specific user and override the user stored at 'users/id-two'
-  spot.query('fetch-user', { userId: 'id-two' }, ['users', 'idtwo']);
+  spot.query('fetch-user', { userId: 'id-two' }, ['users', 'id-two']);
 
   // Instead of awaiting you can also use subscription callback
   spot.subscribeOnce(() => {
     // Access the stored data
-    spot.data.users['id-two'];
+    spot.data.users['id-two'].name;
   })
   
 
