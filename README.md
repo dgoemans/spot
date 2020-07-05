@@ -15,7 +15,7 @@ See code in the `example` directory for a sample usage (and a naive dummy backen
   const spot = initializeSpot(apiBaseUrl);
   
   // Query a list endpoint and store the results under 'users'
-  await spot.query('fetch-users', { userId: 'id-one' }, ['users']);
+  await spot.query('fetch-users', {}, ['users']);
 
   // Access the data
   spot.data.users['id-one'].name
@@ -23,17 +23,41 @@ See code in the `example` directory for a sample usage (and a naive dummy backen
   // Send a command to update a user
   await spot.command('update-user', { userId: 'id-one', age: 7 });
 
-  // Query a specific user and override the user stored at 'users/id-two'
-  spot.query('fetch-user', { userId: 'id-two' }, ['users', 'id-two']);
+  // Query a specific user and override the user stored at 'users/id-one'
+  spot.query('fetch-user', { userId: 'id-one' }, ['users', 'id-one']);
 
   // Instead of awaiting you can also use subscription callback
   spot.subscribeOnce(() => {
     // Access the stored data
-    spot.data.users['id-two'].name;
+    spot.data.users['id-one'].name;
   })
   
-
 ```
+
+## Listing approach
+
+To use list results from an api, a convenient method is to use a dictionary with the IDs as the keys. 
+This allows for convenient fetching in the form of:
+
+```javascript
+  await spot.query('fetch-users', {}, ['users']);
+```
+
+assuming the data returned is something like: 
+
+```json
+[
+  "id-one": { 
+    "name": "Spot",
+    "age": 7
+  },
+  "id-two": { 
+    "name": "Rufus",
+    "age": 4
+  }
+]
+```
+
 
 # Contributing
 
