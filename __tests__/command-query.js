@@ -70,9 +70,8 @@ describe('spot', () => {
     }
 
     {
-      spot.query('fetch-user', { userId: 'id-two' }, ['users', 'id-two']);
+      await spot.query('fetch-user', { userId: 'id-two' }, ['users', 'id-two']);
 
-      await waitForLoadingDone(spot);
       const expectedResult = {
         users: {
           'id-one': { age: 7, name: 'Spot', role: 'Good Boy' },
@@ -101,9 +100,8 @@ describe('spot', () => {
     const spot = initializeSpot(baseUrl);
 
     {
-      spot.query('fetch-user', { userId: 'id-two' }, ['users', 'id-two']);
+      await spot.query('fetch-user', { userId: 'id-two' }, ['users', 'id-two']);
 
-      await waitForLoadingDone(spot);
       const expectedResult = {
         users: {
           'id-two': { age: 3, name: 'Rufus', role: 'Home Security' },
@@ -113,13 +111,11 @@ describe('spot', () => {
       expect(spot.data).toStrictEqual(expectedResult);
     }
 
-    spot.command('update-user', { userId: 'id-two', age: 4 });
-    await waitForLoadingDone(spot);
+    await spot.command('update-user', { userId: 'id-two', age: 4 });
 
     {
-      spot.query('fetch-user', { userId: 'id-two' }, ['users', 'id-two']);
+      await spot.query('fetch-user', { userId: 'id-two' }, ['users', 'id-two']);
 
-      await waitForLoadingDone(spot);
       const expectedResult = {
         users: {
           'id-two': { age: 4, name: 'Rufus', role: 'Home Security' },
@@ -133,9 +129,7 @@ describe('spot', () => {
   it('Can look up data by path', async () => {
     const spot = initializeSpot(baseUrl);
 
-    spot.query('fetch-user', { userId: 'id-two' }, ['users', 'id-two']);
-
-    await waitForLoadingDone(spot);
+    await spot.query('fetch-user', { userId: 'id-two' }, ['users', 'id-two']);
 
     const user = spot.get(['users', 'id-two']);
     expect(user).toStrictEqual({ age: 4, name: 'Rufus', role: 'Home Security' });

@@ -55,27 +55,27 @@ app.listen(port, () => {
 
 const main = async () => {
   const spot = initializeSpot(`http://localhost:${port}`);
-  spot.query('get-users', null, ['users']);
-  await new Promise((resolve) => spot.subscribeOnce(resolve));
 
-  spot.query('get-user', { id: '00001' }, ['users', '00001']);
+  // Queries can be awaited
+  await spot.query('get-users', null, ['users']);
+  await spot.query('get-user', { id: '00001' }, ['users', '00001']);
+
+  console.log(JSON.stringify(spot.data, null, 2));
+
+  // So can commands can be awaited
+  await spot.command('update-user', { id: '00001', role: 'Best friend' });
+
+  // You can also set subscribers instead of awaiting
+  spot.query('get-users', null, ['users']);
   await new Promise((resolve) => spot.subscribeOnce(resolve));
 
   console.log(JSON.stringify(spot.data, null, 2));
 
-  spot.command('update-user', { id: '00001', role: 'Best friend' });
-  await new Promise((resolve) => spot.subscribeOnce(resolve));
-
-  spot.query('get-users', null, ['users']);
-  await new Promise((resolve) => spot.subscribeOnce(resolve));
-
-  console.log(JSON.stringify(spot.data, null, 2));
-
+  // Subscription works with commands too
   spot.command('update-user', { id: '00002', age: 4 });
   await new Promise((resolve) => spot.subscribeOnce(resolve));
 
-  spot.query('get-user', { id: '00002' }, ['users', '00002']);
-  await new Promise((resolve) => spot.subscribeOnce(resolve));
+  await spot.query('get-user', { id: '00002' }, ['users', '00002']);
 
   console.log(JSON.stringify(spot.data, null, 2));
 
