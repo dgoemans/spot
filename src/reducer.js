@@ -3,7 +3,17 @@ import merge from 'deepmerge';
 export function commandQuery(state, action) {
   switch (action.type) {
     case 'QUERY_COMPLETE':
+    {
+      let current = state;
+      action.metadata.path.forEach((segment, index) => {
+        if (index + 1 < action.metadata.path.length) {
+          current = current[segment] || {};
+        } else {
+          delete current[segment];
+        }
+      });
       return merge(state, action.payload);
+    }
     case 'COMMAND_COMPLETE':
       return {
         ...state,

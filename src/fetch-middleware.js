@@ -46,6 +46,7 @@ export const fetchMiddleware = (store) => (next) => async (action) => {
       store.dispatch({
         type: 'QUERY_COMPLETE',
         payload,
+        metadata: { path },
       });
     } catch (e) {
       // eslint-disable-next-line no-console
