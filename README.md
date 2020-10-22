@@ -21,7 +21,7 @@ See code in the `example` directory for a sample usage (and a naive dummy backen
   spot.data.users['id-one'].name
   
   // Send a command to update a user
-  await spot.command('update-user', { userId: 'id-one', age: 7 });
+  await spot.command('update-user', { userId: 'id-one', age: 7 }, /* OPTIONAL */ { method: 'POST' });
 
   // Query a specific user and override the user stored at 'users/id-one'
   spot.query('fetch-user', { userId: 'id-one' }, ['users', 'id-one']);
