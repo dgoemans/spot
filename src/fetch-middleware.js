@@ -24,7 +24,7 @@ export const fetchMiddleware = (store) => (next) => async (action) => {
     try {
       const response = await fetch(url, {
         ...defaultFetchConfig,
-        method: 'GET',
+        method: action?.config?.method ?? 'GET',
       });
 
       if (response.status < 200 || response.status >= 400) {
@@ -62,7 +62,7 @@ export const fetchMiddleware = (store) => (next) => async (action) => {
     try {
       const response = await fetch(url, {
         ...defaultFetchConfig,
-        method: 'POST',
+        method: action?.config?.method ?? 'POST',
         body: JSON.stringify(action.payload.params),
       });
 

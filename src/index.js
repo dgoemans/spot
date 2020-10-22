@@ -42,10 +42,12 @@ export class Spot {
     endpoint,
     params = {},
     path = [endpoint, JSON.stringify(params)],
+    config,
   ) => {
     this.store.dispatch({
       type: 'QUERY',
       payload: { params, endpoint, path },
+      config,
     });
     await this.waitForQuery();
   }
@@ -55,10 +57,11 @@ export class Spot {
    * @param {string} endpoint
    * @param {any=} params default: {}
    */
-  command = async (endpoint, params) => {
+  command = async (endpoint, params, config) => {
     this.store.dispatch({
       type: 'COMMAND',
       payload: { params, endpoint },
+      config,
     });
     await this.waitForQuery();
   }
