@@ -1,6 +1,8 @@
 import deepmerge from 'deepmerge';
 import { makeStore } from './store';
 
+import { Subscription, ActionConfig, Action } from './types';
+
 /**
  * Subscription callback type
  * @callback SpotSubscriptionCallback
@@ -13,7 +15,11 @@ import { makeStore } from './store';
  * @type {Spot}
  */
 export class Spot {
-  constructor(baseUrl, debug) {
+  store: any;
+  subscriptions: { [k: string]: (data: any) => unknown };
+  waitForQuery: () => Promise<unknown>;
+
+  constructor(baseUrl: string, debug?: boolean) {
     this.store = makeStore(debug);
     this.subscriptions = {};
     this.waitForQuery = () => new Promise(this.subscribeOnce);
@@ -39,10 +45,10 @@ export class Spot {
    * @param {string[]=} path default: [endpoint, JSON.stringify(params)]
    */
   query = async (
-    endpoint,
-    params = {},
+    endpoint: string,
+    params: { [k: string]: unknown } = {},
     path = [endpoint, JSON.stringify(params)],
-    config,
+    config?: ActionConfig,
   ) => {
     this.store.dispatch({
       type: 'QUERY',
@@ -57,7 +63,7 @@ export class Spot {
    * @param {string} endpoint
    * @param {any=} params default: {}
    */
-  command = async (endpoint, params, config) => {
+  command = async (endpoint: string, params: { [k: string]: unknown }, config?: { method?: string }) => {
     this.store.dispatch({
       type: 'COMMAND',
       payload: { params, endpoint },
@@ -70,7 +76,7 @@ export class Spot {
    * Subscribe once to changes
    * @param {SpotSubscriptionCallback} subscription
    */
-  subscribeOnce = (subscription) => {
+  subscribeOnce = (subscription: Subscription) => {
     const hash = subscription.toString();
     this.subscriptions[`${hash}_once`] = (state) => {
       subscription(state);
@@ -82,7 +88,7 @@ export class Spot {
    * Subscribe to changes
    * @param {SpotSubscriptionCallback} subscription
    */
-  subscribe = (subscription) => {
+  subscribe = (subscription: Subscription) => {
     const hash = subscription.toString();
     this.subscriptions[hash] = subscription;
   }
@@ -91,7 +97,7 @@ export class Spot {
    * Unsubscribe from changes
    * @param {SpotSubscriptionCallback} subscription
    */
-  unsubscribe = (subscription) => {
+  unsubscribe = (subscription: Subscription) => {
     const hash = subscription.toString();
     delete this.subscriptions[hash];
   }
@@ -100,11 +106,11 @@ export class Spot {
    * Get data stored at path
    * @param {string[]} path
    */
-  get = (path) => {
+  get = (path: string[]) => {
     let state = this.store.getState().data;
     while (path.length) {
       const next = path.shift();
-      state = state[next];
+      state = state[next!];
     }
     return deepmerge({}, state);
   }
@@ -133,4 +139,4 @@ export class Spot {
  * @param {string} baseUrl
  * @param {boolean} debug default: false
  */
-export const initializeSpot = (baseUrl, debug = false) => new Spot(baseUrl, debug);
+export const initializeSpot = (baseUrl: string, debug: boolean = false) => new Spot(baseUrl, debug);

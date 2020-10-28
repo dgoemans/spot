@@ -1,12 +1,25 @@
+require('jest-fetch-mock').enableMocks();
+
 import fetchMock from 'jest-fetch-mock';
 
-import { initializeSpot } from '../src';
+import { initializeSpot, Spot } from '../src';
 
 let users = {};
 
 const baseUrl = 'http://example.com';
 
-const waitForLoadingDone = (spot) => new Promise(spot.subscribeOnce);
+interface DataType {
+  loading: boolean;
+  users: {
+    [k: string]: {
+      name: string;
+      role: string;
+      age: number;
+    }
+  }
+}
+
+const waitForLoadingDone = (spot: Spot) => new Promise(spot.subscribeOnce);
 
 describe('spot', () => {
   beforeEach(() => {
@@ -79,7 +92,7 @@ describe('spot', () => {
         loading: false,
       };
 
-      expect(spot.data).toStrictEqual(expectedResult);
+      expect(spot.data as DataType).toStrictEqual(expectedResult);
     }
 
     {
@@ -92,7 +105,7 @@ describe('spot', () => {
         },
         loading: false,
       };
-      expect(spot.data).toStrictEqual(expectedResult);
+      expect(spot.data as DataType).toStrictEqual(expectedResult);
     }
   });
 
@@ -104,7 +117,7 @@ describe('spot', () => {
 
     await waitForLoadingDone(spot);
 
-    expect(spot.data).toStrictEqual({ loading: false });
+    expect(spot.data as DataType).toStrictEqual({ loading: false });
     expect(spot.errors).toHaveLength(1);
     expect(spot.errors[0]).toMatchSnapshot();
   });
@@ -121,7 +134,7 @@ describe('spot', () => {
         },
         loading: false,
       };
-      expect(spot.data).toStrictEqual(expectedResult);
+      expect(spot.data as DataType).toStrictEqual(expectedResult);
     }
 
     await spot.command('update-user', { userId: 'id-two', age: 4 });
@@ -147,7 +160,7 @@ describe('spot', () => {
     const user = spot.get(['users', 'id-two']);
     expect(user).toStrictEqual({ age: 3, name: 'Rufus', role: 'Home Security' });
 
-    const sameuser = spot.data.users['id-two'];
+    const sameuser = (spot.data as DataType).users['id-two'];
     expect(sameuser).toStrictEqual({ age: 3, name: 'Rufus', role: 'Home Security' });
   });
 
@@ -165,7 +178,7 @@ describe('spot', () => {
         loading: false,
       };
 
-      expect(spot.data).toStrictEqual(expectedResult);
+      expect(spot.data as DataType).toStrictEqual(expectedResult);
     }
 
     {
@@ -180,7 +193,7 @@ describe('spot', () => {
         loading: false,
       };
 
-      expect(spot.data).toStrictEqual(expectedResult);
+      expect(spot.data as DataType).toStrictEqual(expectedResult);
     }
   });
 });

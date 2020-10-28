@@ -1,8 +1,10 @@
 import 'isomorphic-fetch';
 
+import { Action } from './types';
 import { buildUrl } from './build-url';
+import { MiddlewareAPI, Store } from 'redux';
 
-const defaultFetchConfig = {
+const defaultFetchConfig: RequestInit = {
   method: 'GET',
   mode: 'cors',
   credentials: 'same-origin',
@@ -12,12 +14,12 @@ const defaultFetchConfig = {
   referrerPolicy: 'no-referrer',
 };
 
-export const fetchMiddleware = (store) => (next) => async (action) => {
+export const fetchMiddleware = (api: MiddlewareAPI) => (next: any) => async (action: Action) => {
   const nextResult = next(action);
 
   if (action.type === 'QUERY') {
     const url = buildUrl(
-      store.getState().config.baseUrl,
+      api.getState().config.baseUrl,
       action.payload.endpoint,
       action.payload.params,
     );
@@ -36,14 +38,14 @@ export const fetchMiddleware = (store) => (next) => async (action) => {
       const result = await response.json();
 
       const payload = {};
-      let depth = payload;
+      let depth = payload as any;
       const { path } = action.payload;
-      path.forEach((current, index) => {
+      path.forEach((current: string, index: number) => {
         depth[current] = index === path.length - 1 ? result : {};
         depth = depth[current];
       });
 
-      store.dispatch({
+      api.dispatch({
         type: 'QUERY_COMPLETE',
         payload,
         metadata: { path },
@@ -51,13 +53,13 @@ export const fetchMiddleware = (store) => (next) => async (action) => {
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e);
-      store.dispatch({ type: 'ERROR', payload: e });
+      api.dispatch({ type: 'ERROR', payload: e });
     } finally {
-      store.dispatch({ type: 'STATE_UPDATED' });
+      api.dispatch({ type: 'STATE_UPDATED' });
     }
   } else if (action.type === 'COMMAND') {
     const url = buildUrl(
-      store.getState().config.baseUrl,
+      api.getState().config.baseUrl,
       action.payload.endpoint,
     );
     try {
@@ -73,13 +75,13 @@ export const fetchMiddleware = (store) => (next) => async (action) => {
         );
       }
 
-      store.dispatch({ type: 'COMMAND_COMPLETE' });
+      api.dispatch({ type: 'COMMAND_COMPLETE' });
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e);
-      store.dispatch({ type: 'ERROR', payload: e });
+      api.dispatch({ type: 'ERROR', payload: e });
     } finally {
-      store.dispatch({ type: 'STATE_UPDATED' });
+      api.dispatch({ type: 'STATE_UPDATED' });
     }
   }
 
