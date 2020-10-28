@@ -2,7 +2,7 @@ import fetchMock from 'jest-fetch-mock';
 
 import { initializeSpot, Spot } from '../src';
 
-require('jest-fetch-mock').enableMocks();
+fetchMock.enableMocks();
 
 interface User {
   name: string;
@@ -20,7 +20,7 @@ let users: { [k: string]: User } = {};
 
 const baseUrl = 'http://example.com';
 
-const waitForLoadingDone = (spot: Spot) => new Promise(spot.subscribeOnce);
+const waitForLoadingDone = (spot: Spot<DataType>) => new Promise(spot.subscribeOnce);
 
 describe('spot', () => {
   beforeEach(() => {
