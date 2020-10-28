@@ -7,8 +7,6 @@
     "build": "babel src -d lib --extensions \".ts\"",
     "lint": "eslint src/**/*.ts",
     "dev": "babel src -d lib --extensions \".ts\" --watch",
-    "tsc": "tsc -w",
-    "tscbuild": "tsc",
     "test": "jest --watch --watchAll",
     "test-ci": "jest"
   },
