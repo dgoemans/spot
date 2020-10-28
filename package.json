@@ -3,9 +3,11 @@
   "version": "0.0.1",
   "description": "A simple redux client",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "build": "babel src -d lib --extensions \".ts\"",
     "lint": "eslint src/**/*.ts",
+    "gen:types": "tsc --declaration --emitDeclarationOnly --noEmit false --declarationDir lib",
     "dev": "babel src -d lib --extensions \".ts\" --watch",
     "test": "jest --watch --watchAll",
     "test-ci": "jest"
