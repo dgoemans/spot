@@ -1,7 +1,8 @@
 import deepmerge from 'deepmerge';
+
 import { makeStore } from './store';
 
-import { Subscription, ActionConfig, Action } from './types';
+import { Subscription, ActionConfig } from './types';
 
 /**
  * Subscription callback type
@@ -16,7 +17,9 @@ import { Subscription, ActionConfig, Action } from './types';
  */
 export class Spot {
   store: any;
+
   subscriptions: { [k: string]: (data: any) => unknown };
+
   waitForQuery: () => Promise<unknown>;
 
   constructor(baseUrl: string, debug?: boolean) {
@@ -139,4 +142,4 @@ export class Spot {
  * @param {string} baseUrl
  * @param {boolean} debug default: false
  */
-export const initializeSpot = (baseUrl: string, debug: boolean = false) => new Spot(baseUrl, debug);
+export const initializeSpot = (baseUrl: string, debug = false) => new Spot(baseUrl, debug);

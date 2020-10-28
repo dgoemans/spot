@@ -1,6 +1,6 @@
 import merge from 'deepmerge';
-import { State, Action } from 'types';
 
+import { State, Action } from './types';
 
 export function commandQuery(state: State, action: Action) {
   switch (action.type) {

@@ -1,8 +1,8 @@
 import 'isomorphic-fetch';
+import { MiddlewareAPI } from 'redux';
 
 import { Action } from './types';
 import { buildUrl } from './build-url';
-import { MiddlewareAPI, Store } from 'redux';
 
 const defaultFetchConfig: RequestInit = {
   method: 'GET',
