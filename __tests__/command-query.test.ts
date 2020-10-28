@@ -1,8 +1,8 @@
-require('jest-fetch-mock').enableMocks();
-
 import fetchMock from 'jest-fetch-mock';
 
 import { initializeSpot, Spot } from '../src';
+
+require('jest-fetch-mock').enableMocks();
 
 interface User {
   name: string;
@@ -11,7 +11,6 @@ interface User {
 }
 
 interface DataType {
-  loading: boolean;
   users: {
     [k: string]: User
   }
@@ -79,7 +78,7 @@ describe('spot', () => {
   });
 
   it('Can fetch data', async () => {
-    const spot = initializeSpot(baseUrl);
+    const spot = initializeSpot<DataType>(baseUrl);
 
     {
       spot.query('fetch-user', { userId: 'id-one' }, ['users', 'id-one']);
@@ -94,7 +93,7 @@ describe('spot', () => {
         loading: false,
       };
 
-      expect(spot.data as DataType).toStrictEqual(expectedResult);
+      expect(spot.data).toStrictEqual(expectedResult);
     }
 
     {
@@ -107,25 +106,25 @@ describe('spot', () => {
         },
         loading: false,
       };
-      expect(spot.data as DataType).toStrictEqual(expectedResult);
+      expect(spot.data).toStrictEqual(expectedResult);
     }
   });
 
   it('Adds errors when the fetch fails', async () => {
-    const spot = initializeSpot(baseUrl);
+    const spot = initializeSpot<DataType>(baseUrl);
 
     spot.query('invalid-json');
     expect(spot.data).toStrictEqual({ loading: true });
 
     await waitForLoadingDone(spot);
 
-    expect(spot.data as DataType).toStrictEqual({ loading: false });
+    expect(spot.data).toStrictEqual({ loading: false });
     expect(spot.errors).toHaveLength(1);
     expect(spot.errors[0]).toMatchSnapshot();
   });
 
   it('Can execute commands data', async () => {
-    const spot = initializeSpot(baseUrl);
+    const spot = initializeSpot<DataType>(baseUrl);
 
     {
       await spot.query('fetch-user', { userId: 'id-two' }, ['users', 'id-two']);
@@ -136,7 +135,7 @@ describe('spot', () => {
         },
         loading: false,
       };
-      expect(spot.data as DataType).toStrictEqual(expectedResult);
+      expect(spot.data).toStrictEqual(expectedResult);
     }
 
     await spot.command('update-user', { userId: 'id-two', age: 4 });
@@ -155,19 +154,19 @@ describe('spot', () => {
   });
 
   it('Can look up data by path', async () => {
-    const spot = initializeSpot(baseUrl);
+    const spot = initializeSpot<DataType>(baseUrl);
 
     await spot.query('fetch-user', { userId: 'id-two' }, ['users', 'id-two']);
 
     const user = spot.get(['users', 'id-two']);
     expect(user).toStrictEqual({ age: 3, name: 'Rufus', role: 'Home Security' });
 
-    const sameuser = (spot.data as DataType).users['id-two'];
+    const sameuser = (spot.data).users['id-two'];
     expect(sameuser).toStrictEqual({ age: 3, name: 'Rufus', role: 'Home Security' });
   });
 
   it('Can delete data', async () => {
-    const spot = initializeSpot(baseUrl);
+    const spot = initializeSpot<DataType>(baseUrl);
 
     {
       await spot.query('list-users', {}, ['users']);
@@ -180,7 +179,7 @@ describe('spot', () => {
         loading: false,
       };
 
-      expect(spot.data as DataType).toStrictEqual(expectedResult);
+      expect(spot.data).toStrictEqual(expectedResult);
     }
 
     {
@@ -195,7 +194,7 @@ describe('spot', () => {
         loading: false,
       };
 
-      expect(spot.data as DataType).toStrictEqual(expectedResult);
+      expect(spot.data).toStrictEqual(expectedResult);
     }
   });
 });
