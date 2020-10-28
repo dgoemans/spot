@@ -4,20 +4,22 @@ import fetchMock from 'jest-fetch-mock';
 
 import { initializeSpot, Spot } from '../src';
 
-let users = {};
-
-const baseUrl = 'http://example.com';
+interface User {
+  name: string;
+  role: string;
+  age: number;
+}
 
 interface DataType {
   loading: boolean;
   users: {
-    [k: string]: {
-      name: string;
-      role: string;
-      age: number;
-    }
+    [k: string]: User
   }
 }
+
+let users: { [k: string]: User } = {};
+
+const baseUrl = 'http://example.com';
 
 const waitForLoadingDone = (spot: Spot) => new Promise(spot.subscribeOnce);
 
