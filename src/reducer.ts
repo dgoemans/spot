@@ -7,6 +7,7 @@ export function commandQuery(state: State, action: Action) {
     case 'QUERY_COMPLETE':
     {
       let current = state;
+      // eslint-disable-next-line no-unused-expressions
       action.metadata?.path?.forEach((segment, index) => {
         if (index + 1 < (action.metadata?.path?.length ?? 0)) {
           current = current[segment] || {};

@@ -1,4 +1,5 @@
 import deepmerge from 'deepmerge';
+import { Store } from 'redux';
 
 import { makeStore } from './store';
 
@@ -16,8 +17,9 @@ import { Subscription, ActionConfig } from './types';
  * @type {Spot}
  */
 export class Spot {
-  store: any;
+  store: Store;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   subscriptions: { [k: string]: (data: any) => unknown };
 
   waitForQuery: () => Promise<unknown>;
@@ -113,6 +115,7 @@ export class Spot {
     let state = this.store.getState().data;
     while (path.length) {
       const next = path.shift();
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       state = state[next!];
     }
     return deepmerge({}, state);

@@ -1,5 +1,5 @@
 import 'isomorphic-fetch';
-import { MiddlewareAPI } from 'redux';
+import { Dispatch, MiddlewareAPI } from 'redux';
 
 import { Action } from './types';
 import { buildUrl } from './build-url';
@@ -14,7 +14,7 @@ const defaultFetchConfig: RequestInit = {
   referrerPolicy: 'no-referrer',
 };
 
-export const fetchMiddleware = (api: MiddlewareAPI) => (next: any) => async (action: Action) => {
+export const fetchMiddleware = (api: MiddlewareAPI) => (next: Dispatch) => async (action: Action) => {
   const nextResult = next(action);
 
   if (action.type === 'QUERY') {
@@ -38,6 +38,7 @@ export const fetchMiddleware = (api: MiddlewareAPI) => (next: any) => async (act
       const result = await response.json();
 
       const payload = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let depth = payload as any;
       const { path } = action.payload;
       path.forEach((current: string, index: number) => {
