@@ -1,4 +1,4 @@
-export const buildUrl = (base, endpoint, params = {}) => {
+export const buildUrl = (base: string, endpoint: string, params = {}) => {
   const basis = `${base}/${endpoint}`;
   const queryString = params
     ? Object.entries(params).reduce((accum, current) => (

@@ -1,12 +1,15 @@
 import merge from 'deepmerge';
 
-export function commandQuery(state, action) {
+import { State, Action } from './types';
+
+export function commandQuery(state: State, action: Action) {
   switch (action.type) {
     case 'QUERY_COMPLETE':
     {
       let current = state;
-      action.metadata.path.forEach((segment, index) => {
-        if (index + 1 < action.metadata.path.length) {
+      // eslint-disable-next-line no-unused-expressions
+      action.metadata?.path?.forEach((segment, index) => {
+        if (index + 1 < (action.metadata?.path?.length ?? 0)) {
           current = current[segment] || {};
         } else {
           delete current[segment];
@@ -36,7 +39,7 @@ export function commandQuery(state, action) {
   }
 }
 
-export function configure(state, action) {
+export function configure(state: State, action: Action) {
   if (action.type === 'SETUP') {
     const { baseUrl } = action.payload;
     return {
@@ -48,14 +51,14 @@ export function configure(state, action) {
   return { ...state };
 }
 
-function errors(state, action) {
+function errors(state: State, action: Action) {
   if (action.type === 'ERROR') {
     return [...state, action.payload];
   }
   return [...state];
 }
 
-export const reducer = (state, action) => {
+export const reducer = (state: State, action: Action) => {
   if (state.config && state.config.debug) {
     // eslint-disable-next-line no-console
     console.log(
