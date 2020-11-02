@@ -1,8 +1,14 @@
 import fetchMock from 'jest-fetch-mock';
+import * as crypto from 'crypto';
 
 import { initializeSpot, Spot } from '../src';
 
-fetchMock.enableMocks();
+Object.defineProperty(global, 'crypto', {
+  value: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getRandomValues: (arr:any) => crypto.randomBytes(arr.length),
+  },
+});
 
 interface User {
   name: string;
@@ -23,6 +29,10 @@ const baseUrl = 'http://example.com';
 const waitForLoadingDone = (spot: Spot<DataType>) => new Promise(spot.subscribeOnce);
 
 describe('spot', () => {
+  beforeAll(() => {
+    fetchMock.enableMocks();
+  });
+
   beforeEach(() => {
     users = {
       'id-one': {
@@ -82,7 +92,7 @@ describe('spot', () => {
 
     {
       spot.query('fetch-user', { userId: 'id-one' }, ['users', 'id-one']);
-      expect(spot.data).toStrictEqual({ loading: true });
+      expect(spot.data).toMatchObject({ loading: true });
 
       await waitForLoadingDone(spot);
 
@@ -93,7 +103,7 @@ describe('spot', () => {
         loading: false,
       };
 
-      expect(spot.data).toStrictEqual(expectedResult);
+      expect(spot.data).toMatchObject(expectedResult);
     }
 
     {
@@ -106,7 +116,7 @@ describe('spot', () => {
         },
         loading: false,
       };
-      expect(spot.data).toStrictEqual(expectedResult);
+      expect(spot.data).toMatchObject(expectedResult);
     }
   });
 
@@ -114,11 +124,11 @@ describe('spot', () => {
     const spot = initializeSpot<DataType>(baseUrl);
 
     spot.query('invalid-json');
-    expect(spot.data).toStrictEqual({ loading: true });
+    expect(spot.data).toMatchObject({ loading: true });
 
     await waitForLoadingDone(spot);
 
-    expect(spot.data).toStrictEqual({ loading: false });
+    expect(spot.data).toMatchObject({ loading: false });
     expect(spot.errors).toHaveLength(1);
     expect(spot.errors[0]).toMatchSnapshot();
   });
@@ -135,7 +145,7 @@ describe('spot', () => {
         },
         loading: false,
       };
-      expect(spot.data).toStrictEqual(expectedResult);
+      expect(spot.data).toMatchObject(expectedResult);
     }
 
     await spot.command('update-user', { userId: 'id-two', age: 4 });
@@ -149,7 +159,7 @@ describe('spot', () => {
         },
         loading: false,
       };
-      expect(spot.data).toStrictEqual(expectedResult);
+      expect(spot.data).toMatchObject(expectedResult);
     }
   });
 
@@ -159,10 +169,10 @@ describe('spot', () => {
     await spot.query('fetch-user', { userId: 'id-two' }, ['users', 'id-two']);
 
     const user = spot.get(['users', 'id-two']);
-    expect(user).toStrictEqual({ age: 3, name: 'Rufus', role: 'Home Security' });
+    expect(user).toMatchObject({ age: 3, name: 'Rufus', role: 'Home Security' });
 
     const sameuser = (spot.data).users['id-two'];
-    expect(sameuser).toStrictEqual({ age: 3, name: 'Rufus', role: 'Home Security' });
+    expect(sameuser).toMatchObject({ age: 3, name: 'Rufus', role: 'Home Security' });
   });
 
   it('Can delete data', async () => {
@@ -179,7 +189,7 @@ describe('spot', () => {
         loading: false,
       };
 
-      expect(spot.data).toStrictEqual(expectedResult);
+      expect(spot.data).toMatchObject(expectedResult);
     }
 
     {
@@ -194,7 +204,24 @@ describe('spot', () => {
         loading: false,
       };
 
-      expect(spot.data).toStrictEqual(expectedResult);
+      expect(spot.data).toMatchObject(expectedResult);
     }
+  });
+
+  it('Can run multiple queries with the subscribe once', async () => {
+    const spot = initializeSpot<DataType>(baseUrl);
+
+    spot.query('fetch-user', { userId: 'id-two' }, ['users', 'id-two']);
+    spot.query('fetch-user', { userId: 'id-one' }, ['users', 'id-one']);
+
+    expect(spot.data.loading).toBe(true);
+    expect(Object.keys(spot.data.spot.active)).toHaveLength(2);
+
+    await waitForLoadingDone(spot);
+
+    expect(Object.keys(spot.data.spot.active)).toHaveLength(0);
+    expect(spot.data.loading).toBe(false);
+    expect(spot.data.users['id-two']).toMatchObject({ age: 3, name: 'Rufus', role: 'Home Security' });
+    expect(spot.data.users['id-one']).toMatchObject({ age: 7, name: 'Spot', role: 'Good Boy' });
   });
 });

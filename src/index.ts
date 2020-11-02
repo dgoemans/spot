@@ -1,12 +1,16 @@
 import deepmerge from 'deepmerge';
 import { Store } from 'redux';
 
+import { uuidv4 } from './uuid';
 import { makeStore } from './store';
 
 import { Subscription, ActionConfig } from './types';
 
 interface DataType {
   loading: boolean;
+  spot: {
+    active: { [k: string]: boolean }
+  };
 }
 
 export class Spot<T = unknown> {
@@ -45,6 +49,9 @@ export class Spot<T = unknown> {
       type: 'QUERY',
       payload: { params, endpoint, path },
       config,
+      metadata: {
+        correlationId: uuidv4(),
+      },
     });
     await this.waitForQuery();
   }
@@ -54,6 +61,9 @@ export class Spot<T = unknown> {
       type: 'COMMAND',
       payload: { params, endpoint },
       config,
+      metadata: {
+        correlationId: uuidv4(),
+      },
     });
     await this.waitForQuery();
   }
@@ -62,7 +72,7 @@ export class Spot<T = unknown> {
     const hash = subscription.toString();
     this.subscriptions[`${hash}_once`] = (state) => {
       subscription(state);
-      delete this.subscriptions[hash];
+      delete this.subscriptions[`${hash}_once`];
     };
   }
 

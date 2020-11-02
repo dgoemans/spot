@@ -15,22 +15,51 @@ export function commandQuery(state: State, action: Action) {
           delete current[segment];
         }
       });
-      return merge(state, action.payload);
+      const newState = merge(state, action.payload);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (newState as any).spot.active[`${action.metadata?.correlationId}`];
+      return newState;
     }
     case 'COMMAND_COMPLETE':
-      return {
+    {
+      const newState = {
         ...state,
       };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (newState as any).spot.active[`${action.metadata?.correlationId}`];
+      return newState;
+    }
     case 'QUERY':
+      return {
+        ...state,
+        loading: true,
+        spot: {
+          ...state.spot,
+          active: { ...state.spot.active, [`${action.metadata?.correlationId}`]: true },
+        },
+      };
     case 'COMMAND':
       return {
         ...state,
         loading: true,
+        spot: {
+          ...state.spot,
+          active: { ...state.spot.active, [`${action.metadata?.correlationId}`]: true },
+        },
       };
+    case 'ERROR':
+    {
+      const newState = {
+        ...state,
+      };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (newState as any).spot.active[`${action.metadata?.correlationId}`];
+      return newState;
+    }
     case 'STATE_UPDATED':
       return {
         ...state,
-        loading: false,
+        loading: false, // (Object.keys(state.spot.active).length > 0),
       };
     default:
       return {
