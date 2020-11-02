@@ -59,7 +59,7 @@ export function commandQuery(state: State, action: Action) {
     case 'STATE_UPDATED':
       return {
         ...state,
-        loading: false, // (Object.keys(state.spot.active).length > 0),
+        loading: (Object.keys(state.spot.active).length > 0),
       };
     default:
       return {
