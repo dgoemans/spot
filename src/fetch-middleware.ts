@@ -23,6 +23,8 @@ export const fetchMiddleware = (api: MiddlewareAPI) => (next: Dispatch) => async
       action.payload.endpoint,
       action.payload.params,
     );
+
+    const correlationId = action.metadata?.correlationId;
     try {
       const response = await fetch(url, {
         ...defaultFetchConfig,
@@ -49,20 +51,26 @@ export const fetchMiddleware = (api: MiddlewareAPI) => (next: Dispatch) => async
       api.dispatch({
         type: 'QUERY_COMPLETE',
         payload,
-        metadata: { path },
+        metadata: {
+          path,
+          correlationId,
+        },
       });
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e);
-      api.dispatch({ type: 'ERROR', payload: e });
+      api.dispatch({ type: 'ERROR', payload: e, metadata: { correlationId } });
     } finally {
-      api.dispatch({ type: 'STATE_UPDATED' });
+      api.dispatch({ type: 'STATE_UPDATED', metadata: { correlationId } });
     }
   } else if (action.type === 'COMMAND') {
     const url = buildUrl(
       api.getState().config.baseUrl,
       action.payload.endpoint,
     );
+
+    const correlationId = action.metadata?.correlationId;
+
     try {
       const response = await fetch(url, {
         ...defaultFetchConfig,
@@ -76,13 +84,13 @@ export const fetchMiddleware = (api: MiddlewareAPI) => (next: Dispatch) => async
         );
       }
 
-      api.dispatch({ type: 'COMMAND_COMPLETE' });
+      api.dispatch({ type: 'COMMAND_COMPLETE', metadata: { correlationId } });
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e);
-      api.dispatch({ type: 'ERROR', payload: e });
+      api.dispatch({ type: 'ERROR', payload: e, metadata: { correlationId } });
     } finally {
-      api.dispatch({ type: 'STATE_UPDATED' });
+      api.dispatch({ type: 'STATE_UPDATED', metadata: { correlationId } });
     }
   }
 

@@ -11,6 +11,7 @@ export interface Action {
   payload?: any;
   metadata?: {
     path?: string[];
+    correlationId?: string;
   },
   config?: ActionConfig
 }
