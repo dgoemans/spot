@@ -89,14 +89,9 @@ function errors(state: State, action: Action) {
 
 export const reducer = (state: State, action: Action) => {
   if (state.config && state.config.debug) {
-    // eslint-disable-next-line no-console
-    console.log(
-      `Got Action:\n${JSON.stringify(
-        action,
-        null,
-        2,
-      )}\nCurrent State:\n${JSON.stringify(state, null, 2)}`,
-    );
+    /* eslint-disable no-console */
+    console.debug('Got Action:', action);
+    console.debug('Current State:', state);
   }
 
   return {
