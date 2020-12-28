@@ -21,7 +21,8 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm run gen:types
-      - run: npm version ${{ github.event.ref }#refs/*/} --no-git-tag-version
+      - run: echo "TAG=$(echo ${GITHUB_REF#refs/*/})" >> $GITHUB_ENV
+      - run: npm version $TAG --no-git-tag-version
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
