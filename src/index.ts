@@ -56,7 +56,7 @@ export class Spot<T = unknown> {
     await this.waitForQuery();
   }
 
-  command = async (endpoint: string, params: { [k: string]: unknown }, config?: { method?: string }) => {
+  command = async (endpoint: string, params: { [k: string]: unknown }, config?: ActionConfig) => {
     this.store.dispatch({
       type: 'COMMAND',
       payload: { params, endpoint },
@@ -103,7 +103,7 @@ export class Spot<T = unknown> {
   }
 
   get errors() {
-    return deepmerge([], this.store.getState().errors);
+    return [...this.store.getState().errors];
   }
 }
 

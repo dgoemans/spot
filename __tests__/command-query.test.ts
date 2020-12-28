@@ -25,6 +25,7 @@ interface DataType {
 let users: { [k: string]: User } = {};
 
 const baseUrl = 'http://example.com';
+const authToken = 'AUTH_TOKEN';
 
 const waitForLoadingDone = (spot: Spot<DataType>) => new Promise(spot.subscribeOnce);
 
@@ -78,6 +79,17 @@ describe('spot', () => {
         return {
           status: 200,
           body: '',
+        };
+      } if (req.url.startsWith(`${baseUrl}/authorized-endpoint`)) {
+        if (req.headers.get('authorization') === authToken) {
+          return {
+            body: '{}',
+            status: 200,
+          };
+        }
+        return {
+          body: 'NOT AUTHORIZED',
+          status: 401,
         };
       }
       return {
@@ -223,5 +235,21 @@ describe('spot', () => {
     expect(spot.data.loading).toBe(false);
     expect(spot.data.users['id-two']).toMatchObject({ age: 3, name: 'Rufus', role: 'Home Security' });
     expect(spot.data.users['id-one']).toMatchObject({ age: 7, name: 'Spot', role: 'Good Boy' });
+  });
+
+  it('Inserts authorization headers data', async () => {
+    const spot = initializeSpot<DataType>(baseUrl);
+
+    await spot.query('authorized-endpoint', {}, ['auth'], { authorization: 'WRONG TOKEN' });
+    expect(spot.errors).toHaveLength(1);
+    expect(spot.errors[0]).toBe('Error: QUERY FAILED 401: Unauthorized');
+
+    await spot.query('authorized-endpoint', {}, ['auth'], { authorization: authToken });
+    const successResult = {
+      auth: {},
+      loading: false,
+    };
+
+    expect(spot.data).toMatchObject(successResult);
   });
 });
