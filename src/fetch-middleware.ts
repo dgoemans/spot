@@ -29,6 +29,10 @@ export const fetchMiddleware = (api: MiddlewareAPI) => (next: Dispatch) => async
       const response = await fetch(url, {
         ...defaultFetchConfig,
         method: action?.config?.method ?? 'GET',
+        headers: {
+          ...defaultFetchConfig.headers,
+          authorization: action.config?.authorization || '',
+        },
       });
 
       if (response.status < 200 || response.status >= 400) {
@@ -56,10 +60,10 @@ export const fetchMiddleware = (api: MiddlewareAPI) => (next: Dispatch) => async
           correlationId,
         },
       });
-    } catch (e) {
+    } catch (err) {
       // eslint-disable-next-line no-console
-      console.error(e);
-      api.dispatch({ type: 'ERROR', payload: e, metadata: { correlationId } });
+      console.error(err);
+      api.dispatch({ type: 'ERROR', payload: err.toString(), metadata: { correlationId } });
     } finally {
       api.dispatch({ type: 'STATE_UPDATED', metadata: { correlationId } });
     }
@@ -76,6 +80,10 @@ export const fetchMiddleware = (api: MiddlewareAPI) => (next: Dispatch) => async
         ...defaultFetchConfig,
         method: action?.config?.method ?? 'POST',
         body: JSON.stringify(action.payload.params),
+        headers: {
+          ...defaultFetchConfig.headers,
+          authorization: action.config?.authorization || '',
+        },
       });
 
       if (response.status < 200 || response.status >= 400) {
