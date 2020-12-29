@@ -69,21 +69,11 @@ export class Spot<T = unknown> {
   }
 
   subscribeOnce = (subscription: Subscription) => {
-    const hash = subscription.toString();
-    this.subscriptions[`${hash}_once`] = (state) => {
+    const hash = uuidv4();
+    this.subscriptions[hash] = (state) => {
       subscription(state);
-      delete this.subscriptions[`${hash}_once`];
+      delete this.subscriptions[hash];
     };
-  }
-
-  subscribe = (subscription: Subscription) => {
-    const hash = subscription.toString();
-    this.subscriptions[hash] = subscription;
-  }
-
-  unsubscribe = (subscription: Subscription) => {
-    const hash = subscription.toString();
-    delete this.subscriptions[hash];
   }
 
   get = (path: string[]) => {
