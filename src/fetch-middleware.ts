@@ -36,9 +36,10 @@ export const fetchMiddleware = (api: MiddlewareAPI) => (next: Dispatch) => async
       });
 
       if (response.status < 200 || response.status >= 400) {
-        throw new Error(
-          `QUERY FAILED ${response.status}: ${response.statusText}`,
-        );
+        // eslint-disable-next-line no-console
+        console.error(`QUERY FAILED ${response.status}: ${response.statusText}`);
+        api.dispatch({ type: 'ERROR', payload: { message: `QUERY FAILED ${response.status}: ${response.statusText}`, status: response.status }, metadata: { correlationId } });
+        return;
       }
 
       const result = await response.json();
@@ -63,7 +64,7 @@ export const fetchMiddleware = (api: MiddlewareAPI) => (next: Dispatch) => async
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(err);
-      api.dispatch({ type: 'ERROR', payload: err.toString(), metadata: { correlationId } });
+      api.dispatch({ type: 'ERROR', payload: { message: err.toString() }, metadata: { correlationId } });
     } finally {
       api.dispatch({ type: 'STATE_UPDATED', metadata: { correlationId } });
     }

@@ -1,3 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`spot Adds errors when the fetch fails 1`] = `"FetchError: invalid json response body at  reason: Unexpected token < in JSON at position 0"`;
+exports[`spot Adds errors when the fetch fails 1`] = `
+Object {
+  "message": "FetchError: invalid json response body at  reason: Unexpected token < in JSON at position 0",
+}
+`;

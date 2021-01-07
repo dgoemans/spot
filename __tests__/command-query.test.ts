@@ -242,7 +242,7 @@ describe('spot', () => {
 
     await spot.query('authorized-endpoint', {}, ['auth'], { authorization: 'WRONG TOKEN' });
     expect(spot.errors).toHaveLength(1);
-    expect(spot.errors[0]).toBe('Error: QUERY FAILED 401: Unauthorized');
+    expect(spot.errors[0]).toMatchObject({ message: 'QUERY FAILED 401: Unauthorized', status: 401 });
 
     await spot.query('authorized-endpoint', {}, ['auth'], { authorization: authToken });
     const successResult = {
