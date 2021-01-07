@@ -39,7 +39,7 @@ export const fetchMiddleware = (api: MiddlewareAPI) => (next: Dispatch) => async
         // eslint-disable-next-line no-console
         console.error(`QUERY FAILED ${response.status}: ${response.statusText}`);
         api.dispatch({ type: 'ERROR', payload: { message: `QUERY FAILED ${response.status}: ${response.statusText}`, status: response.status }, metadata: { correlationId } });
-        return;
+        return nextResult;
       }
 
       const result = await response.json();
