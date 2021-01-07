@@ -13,6 +13,11 @@ interface DataType {
   };
 }
 
+export interface Error {
+  message: string;
+  status?: number;
+}
+
 export class Spot<T = unknown> {
   store: Store;
 
@@ -93,7 +98,7 @@ export class Spot<T = unknown> {
   }
 
   get errors() {
-    return [...this.store.getState().errors];
+    return [...this.store.getState().errors] as Error[];
   }
 }
 

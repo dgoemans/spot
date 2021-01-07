@@ -88,16 +88,15 @@ export const fetchMiddleware = (api: MiddlewareAPI) => (next: Dispatch) => async
       });
 
       if (response.status < 200 || response.status >= 400) {
-        throw new Error(
-          `COMMAND FAILED ${response.status}: ${response.statusText}`,
-        );
+        api.dispatch({ type: 'ERROR', payload: { message: `COMMAND FAILED ${response.status}: ${response.statusText}`, status: response.status }, metadata: { correlationId } });
+        return nextResult;
       }
 
       api.dispatch({ type: 'COMMAND_COMPLETE', metadata: { correlationId } });
-    } catch (e) {
+    } catch (err) {
       // eslint-disable-next-line no-console
-      console.error(e);
-      api.dispatch({ type: 'ERROR', payload: e, metadata: { correlationId } });
+      console.error(err);
+      api.dispatch({ type: 'ERROR', payload: { message: err.toString() }, metadata: { correlationId } });
     } finally {
       api.dispatch({ type: 'STATE_UPDATED', metadata: { correlationId } });
     }
