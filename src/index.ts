@@ -17,6 +17,7 @@ export interface Error {
   message: string;
   status?: number;
   statusText?: string;
+  body?: string;
 }
 
 export class Spot<T = unknown> {
