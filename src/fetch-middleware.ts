@@ -38,7 +38,7 @@ export const fetchMiddleware = (api: MiddlewareAPI) => (next: Dispatch) => async
       if (response.status < 200 || response.status >= 400) {
         // eslint-disable-next-line no-console
         console.error(`QUERY FAILED ${response.status}: ${response.statusText}`);
-        api.dispatch({ type: 'ERROR', payload: { message: `QUERY FAILED ${response.status}: ${response.statusText}`, status: response.status }, metadata: { correlationId } });
+        api.dispatch({ type: 'ERROR', payload: { message: `QUERY FAILED ${response.status}: ${response.statusText}`, status: response.status, statusText: response.statusText }, metadata: { correlationId } });
         return nextResult;
       }
 
@@ -88,7 +88,7 @@ export const fetchMiddleware = (api: MiddlewareAPI) => (next: Dispatch) => async
       });
 
       if (response.status < 200 || response.status >= 400) {
-        api.dispatch({ type: 'ERROR', payload: { message: `COMMAND FAILED ${response.status}: ${response.statusText}`, status: response.status }, metadata: { correlationId } });
+        api.dispatch({ type: 'ERROR', payload: { message: `COMMAND FAILED ${response.status}: ${response.statusText}`, status: response.status, statusText: response.statusText }, metadata: { correlationId } });
         return nextResult;
       }
 
