@@ -16,6 +16,7 @@ interface DataType {
 export interface Error {
   message: string;
   status?: number;
+  statusText?: string;
 }
 
 export class Spot<T = unknown> {
