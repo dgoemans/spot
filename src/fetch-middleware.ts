@@ -29,6 +29,7 @@ export const fetchMiddleware = (api: MiddlewareAPI) => (next: Dispatch) => async
       const response = await fetch(url, {
         ...defaultFetchConfig,
         method: action?.config?.method ?? 'GET',
+        credentials: action?.config?.credentials ?? 'same-origin',
         headers: {
           ...defaultFetchConfig.headers,
           authorization: action.config?.authorization || '',
@@ -89,6 +90,7 @@ export const fetchMiddleware = (api: MiddlewareAPI) => (next: Dispatch) => async
       const response = await fetch(url, {
         ...defaultFetchConfig,
         method: action?.config?.method ?? 'POST',
+        credentials: action?.config?.credentials ?? 'same-origin',
         body: JSON.stringify(action.payload.params),
         headers: {
           ...defaultFetchConfig.headers,

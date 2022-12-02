@@ -5,6 +5,7 @@ export type ActionType = 'SETUP' | 'ERROR' | 'QUERY' | 'COMMAND' | 'QUERY_COMPLE
 export interface ActionConfig {
   method?: string;
   authorization?: string;
+  credentials?: RequestCredentials;
 }
 
 export interface Action {
