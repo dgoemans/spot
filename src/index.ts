@@ -1,4 +1,4 @@
-import deepmerge from 'deepmerge';
+import { deepmerge } from 'deepmerge-ts';
 import { Store } from 'redux';
 
 import { uuidv4 } from './uuid';
@@ -92,7 +92,7 @@ export class Spot<T = unknown> {
       /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
       state = (state as any)[next!];
     }
-    return deepmerge({}, state);
+    return deepmerge({}, state) as T & DataType;
   }
 
   get data() {

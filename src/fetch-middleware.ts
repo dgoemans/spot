@@ -74,7 +74,7 @@ export const fetchMiddleware = (api: MiddlewareAPI) => (next: Dispatch) => async
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(err);
-      api.dispatch({ type: 'ERROR', payload: { message: err.toString() }, metadata: { correlationId } });
+      api.dispatch({ type: 'ERROR', payload: { message: (err as Error).toString() }, metadata: { correlationId } });
     } finally {
       api.dispatch({ type: 'STATE_UPDATED', metadata: { correlationId } });
     }
@@ -116,7 +116,7 @@ export const fetchMiddleware = (api: MiddlewareAPI) => (next: Dispatch) => async
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(err);
-      api.dispatch({ type: 'ERROR', payload: { message: err.toString() }, metadata: { correlationId } });
+      api.dispatch({ type: 'ERROR', payload: { message: (err as Error).toString() }, metadata: { correlationId } });
     } finally {
       api.dispatch({ type: 'STATE_UPDATED', metadata: { correlationId } });
     }

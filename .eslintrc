@@ -24,6 +24,7 @@
     "@typescript-eslint/ban-ts-ignore": "off", // annoying to have this when we need ts-ignore to make tests work
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
+    "default-param-last": "off",
     "no-unused-expressions": ["warn", {
       "allowShortCircuit": true,
       "allowTernary": true

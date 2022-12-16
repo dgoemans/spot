@@ -1,4 +1,4 @@
-import merge from 'deepmerge';
+import { deepmerge as merge } from 'deepmerge-ts';
 
 import { State, Action } from './types';
 
